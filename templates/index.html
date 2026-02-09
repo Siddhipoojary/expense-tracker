@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Expense tracker Dashboard</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <link rel="stylesheet"href="{{ url_for('static',filename='style.css')}}">
+            
+    </head>
+    <body>
+        <div class="Dashboard">
+            <div class="card add-expense">
+                <h3>Add Expense</h3>
+                <form action ="/add_expense"method="POST">
+                <input type="number" name="amount" placeholder="Amount"  required>
+                
+                <input type="text" name="reason" placeholder="Reason"  required>
+                <br><br>
+                <button type="submit">Add</button>
+        </form>
+        </div>
+
+        <div class="summary">
+        
+        <p><b>Total:</b> {{total}}
+        <b>Limit:</b>{{limit}}</p>
+        <p>{{warning}}</p>
+        </div>
+        
+
+        <div class="card">
+            <h3>AI Spending Pattern</h3>
+            <ul>
+            {% for s in summary %}
+            <li>{{ s[0]}} -> {{s[1]}}</li>
+            {% endfor %}
+            </ul>
+            <table border="1">
+                <tr>
+                    <th>Amount</th>
+                    <th>Reason</th>
+                    <th>  Caregory</th>
+                    <th>Date</th>
+                </tr>
+            {% for e in expenses %}
+            <tr>
+                <td>{{ e[0] }}</td>
+                <td>{{ e[1] }}</td>
+                <td>{{ e[2] }}</td>
+                <td>{{ e[3] }}</td>
+            </tr>
+            {% endfor %}
+            
+            </table>
+        </div>
+        <div class="card">
+            <h3> AI Expense Distribution</h3>
+            <canvas id="pieChart"width="250"height="250"></canvas>
+        </div>
+    </div>
+        <script>
+            const labels={{labels| tojson }};
+            const values={{ values | tojson}};
+            
+            const ctx= document.getElementById('pieChart').getContext("2d");
+            new Chart(ctx, {
+                type:"pie",
+                data:{
+                    labels: labels ,
+                    datasets:[{
+                        data:values,
+                        backgroundColor:[
+                            '#ff9999',
+                            '#66b3ff',
+                            '#99ff99',
+                            '#ffcc99',
+                            '#c2c2f0',
+                        ]
+                    }]
+                }
+            });
+        </script>
+        </div>
+        </div> 
+        <a href="/logout">Logout</a>
+    </body>
+</html>
