@@ -1,0 +1,1 @@
+conn = sqlite3.connect(DB, check_same_thread=False)

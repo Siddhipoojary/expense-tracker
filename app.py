@@ -15,7 +15,7 @@ vectorizer=pickle.load(open("vectorizer.pkl","rb"))
 
 
 def init_db():
-    conn=sqlite3.connect(DB)
+    conn = sqlite3.connect(DB, check_same_thread=False)
     cur=conn.cursor()
 
     cur.execute(""" CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT,username TEXT UNIQUE,password TEXT,daily_limit INTEGER)""")
@@ -35,7 +35,7 @@ def login():
         daily_limit=request.form["daily_limit"].strip()
         
 
-        conn=sqlite3.connect(DB)
+        conn = sqlite3.connect(DB, check_same_thread=False)
         cur=conn.cursor()
         cur.execute("SELECT id FROM users WHERE username=? AND password=?",(username,password))
         user=cur.fetchone()
@@ -59,7 +59,7 @@ def register():
         password=request.form["password"].strip()
         daily_limit=request.form["daily_limit"].strip()
         try:
-            conn=sqlite3.connect(DB)
+            conn = sqlite3.connect(DB, check_same_thread=False)
             cur=conn.cursor()
             cur.execute("INSERT INTO users (username,password,daily_limit)VALUES(?,?,?)",(username,password,daily_limit))
            
@@ -82,7 +82,7 @@ def dashboard():
     
     user_id =session["user_id"]
     daily_limit=session.get("daily_limit")
-    conn=sqlite3.connect(DB)
+    conn = sqlite3.connect(DB, check_same_thread=False)
     cur=conn.cursor()
 
     cur.execute("SELECT amount,reason,Category,date FROM expenses WHERE user_id=?",(session["user_id"],))
@@ -128,7 +128,7 @@ def add_expense():
 
     today=date.today().isoformat()
     
-    conn=sqlite3.connect(DB)
+    conn = sqlite3.connect(DB, check_same_thread=False)
     cur=conn.cursor()
 
 
