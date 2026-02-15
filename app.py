@@ -105,9 +105,14 @@ def dashboard():
     values=[row[1] for row in Chart_data]
 
     exceeded=total>limit
+
+    
+    summary = Chart_data  
+    warning = "Daily limit exceeded!" if exceeded else ""
+
     
 
-    return render_template("dashboard.html",expenses=expenses,total=total,limit=daily_limit,exceeded=exceeded,labels=labels,values=values)
+    return render_template("dashboard.html",expenses=expenses,total=total,limit=daily_limit,exceeded=exceeded,labels=labels,values=values,summary=summary,warning=warning)
 
 @app.route("/add_expense",methods=["POST"])
 def add_expense():
@@ -145,4 +150,4 @@ def logout():
 
 
 if __name__=="__main__":
-    app.run
+    app.run(debug=True, host="0.0.0.0", port=5000)
