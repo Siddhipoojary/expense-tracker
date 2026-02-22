@@ -29,6 +29,7 @@ init_db()
 
 @app.route("/",methods=["GET","POST"])
 def login():
+    error=None
     if request.method=="POST":
         username=request.form["username"].strip()
         password=request.form["password"].strip()
@@ -42,36 +43,41 @@ def login():
         conn.close()
         if user:
             if not daily_limit.isdigit():
-                return "Daily limit must be a number"
-            session["user_id"]=user[0]
-            session["daily_limit"]=int(daily_limit)
+                error="Daily limit must be a number"
+            else:
+                session["user_id"]=user[0]
+                session["daily_limit"]=int(daily_limit)
             return redirect("/dashboard")
         else:
-            return "Invaild login"
+            error ="Invalid username or password"
 
-    return render_template("login.html")
+    return render_template("login.html",error=error)
 
 
 @app.route("/register",methods=["GET","POST"])
 def register():
+    error=None
     if request.method=="POST":
         username=request.form["username"].strip()
         password=request.form["password"].strip()
         daily_limit=request.form["daily_limit"].strip()
-        try:
-            conn = sqlite3.connect(DB, check_same_thread=False)
-            cur=conn.cursor()
-            cur.execute("INSERT INTO users (username,password,daily_limit)VALUES(?,?,?)",(username,password,daily_limit))
+        if not daily_limit.isdigit():
+            error="Daily limit must be a number"
+        else:
+            try:
+                conn = sqlite3.connect(DB, check_same_thread=False)
+                cur=conn.cursor()
+                cur.execute("INSERT INTO users (username,password,daily_limit)VALUES(?,?,?)",(username,password,daily_limit))
            
-            conn.commit()
-            conn.close()
+                conn.commit()
+                conn.close()
             
-            return redirect("/")
-        except sqlite3.IntegrityError:
-            return "User already exists"
+                return redirect("/")
+            except sqlite3.IntegrityError:
+                error="User already exists"
         
 
-    return render_template("register.html")
+    return render_template("register.html",error=error)
 
 
 
