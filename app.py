@@ -98,9 +98,9 @@ def dashboard():
 
     total=cur.fetchone()[0]
 
-    cur.execute("SELECT daily_limit FROM users WHERE id=?",(session["user_id"],))
+    
 
-    limit=cur.fetchone()[0]
+    limit=session.get("daily_limit")
 
     cur.execute("""SELECT Category,SUM(amount) FROM expenses WHERE user_id=? GROUP BY Category """,(session["user_id"],))
     Chart_data=cur.fetchall()
@@ -132,10 +132,8 @@ def add_expense():
         Category="Other"
     else:
         X=vectorizer.transform([reason])
-        probs=model.predict_proba(X)[0]
-        max_prob=max(probs)
-
-        if max_prob<0.6:
+        
+        if X.sum()==0:
             Category="Other"
         else:
             Category=model.predict(X)[0]
