@@ -128,8 +128,17 @@ def add_expense():
     amount=request.form["amount"]
     reason=request.form["reason"]
 
-    X=vectorizer.transform([reason])
-    Category=model.predict(X)[0]
+    if reason.strip()=="":
+        Category="Other"
+    else:
+        X=vectorizer.transform([reason])
+        probs=model.predict_proba(X)[0]
+        max_prob=max(probs)
+
+        if max_prob<0.6:
+            Category="Other"
+        else:
+            Category=model.predict(X)[0]
     
 
     today=date.today().isoformat()
